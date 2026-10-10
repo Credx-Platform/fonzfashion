@@ -8,8 +8,8 @@
 <style>
 :root{color-scheme:dark;--ink:#f4f2ee;--mood:#702e2d;--accent:#e3694d;--ease:cubic-bezier(.19,1,.22,1)}
 *{box-sizing:border-box}
-html,body{height:100%;width:100%;margin:0;overflow:hidden}
-body{background:#121211;color:var(--ink);font-family:Inter,Arial,sans-serif;letter-spacing:-.025em;overscroll-behavior:none;touch-action:pan-x}
+html,body{height:100%;width:100%;margin:0;overflow:clip}
+body{position:fixed;inset:0;background:#121211;color:var(--ink);font-family:Inter,Arial,sans-serif;letter-spacing:-.025em;overscroll-behavior:none;touch-action:pan-x}
 button{font:inherit;color:inherit}
 .scene{position:fixed;inset:0;overflow:hidden;background:#0b0b0e}
 .atmosphere{position:absolute;inset:0;opacity:0;transition:opacity 1.25s ease; background:radial-gradient(ellipse at 57% 46%,var(--wash) 0%,color-mix(in srgb,var(--wash) 65%,#0c0b10) 38%,#0c0b10 83%)}
