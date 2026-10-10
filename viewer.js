@@ -17,8 +17,8 @@ function normalizeGarment(image){
  out.drawImage(image,left/512*image.width,top/512*image.height,width/512*image.width,height/512*image.height,(512-width*scale)/2,(512-height*scale)/2,width*scale,height*scale);
  return {atlas,mask:out.getImageData(0,0,512,512).data};
 }
-function garmentGeometry(mask){
- const data=[],N=128,valid=new Uint8Array(N*N);
+function garmentGeometry(mask,N=128){
+ const data=[],valid=new Uint8Array(N*N);
  function depth(u,v){const x=(u-.5)*2,y=(.5-v)*2;const body=Math.exp(-Math.pow(x*1.9,4));return .042+.15*body*(.78+.22*Math.cos(y*2))+.011*Math.sin(x*27+y*9)*body+.009*Math.sin(y*30+x*7);}
  function point(u,v,side){return [(u-.5)*2.5,(.5-v)*2.65,depth(u,v)*side];}
  function push(u,v,side,normal){
@@ -57,7 +57,7 @@ class GarmentViewer{
  constructor(canvas,{interactive=false,auto=true,onChange=()=>{},visible=()=>true}={}){
   this.canvas=canvas;this.interactive=interactive;this.auto=auto;this.onChange=onChange;this.visible=visible;this.yaw=-.2;this.pitch=-.035;this.zoom=1;this.sequence=0;this.ready=false;
   this.gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false,preserveDrawingBuffer:true});
-  if(!this.gl){canvas.dataset.status='unavailable';return;}
+  if(!this.gl)return new SoftwareGarmentViewer(canvas,{interactive,auto,onChange,visible});
   const gl=this.gl;
   const vs=`attribute vec3 aPosition;attribute vec3 aNormal;attribute vec2 aUV;attribute float aFace;uniform mat4 uRotation;uniform mat4 uProjection;uniform float uDistance;varying vec3 vNormal;varying vec2 vUV;varying float vFace;varying vec3 vPosition;void main(){vec4 p=uRotation*vec4(aPosition,1.0);vNormal=mat3(uRotation)*aNormal;vPosition=p.xyz;p.z-=uDistance;gl_Position=uProjection*p;vUV=aUV;vFace=aFace;}`;
   const fs=`precision mediump float;uniform sampler2D uFront;uniform sampler2D uBack;varying vec3 vNormal;varying vec2 vUV;varying float vFace;varying vec3 vPosition;void main(){vec3 n=normalize(vNormal);vec4 tex=vFace<.5?texture2D(uFront,vUV):texture2D(uBack,vUV);vec3 base=tex.a>.1?tex.rgb:vec3(.06,.061,.065);if(vFace>1.5){float weave=sin(vUV.y*900.0)*sin(vUV.x*750.0);base=vec3(.095,.096,.103)+weave*.004;}float key=max(dot(n,normalize(vec3(-.65,.8,1.6))),0.0);float fill=max(dot(n,normalize(vec3(1.0,.25,.45))),0.0);float rim=pow(1.0-abs(n.z),3.0);vec3 color=base*(.67+.32*key+.12*fill)+rim*vec3(.026,.031,.038);gl_FragColor=vec4(color,1.0);}`;
@@ -112,4 +112,49 @@ class GarmentViewer{
   canvas.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(e.key))return;e.preventDefault();e.stopPropagation();this.auto=false;if(e.key==='ArrowLeft')this.yaw-=.15;if(e.key==='ArrowRight')this.yaw+=.15;if(e.key==='ArrowUp')this.pitch=Math.max(-1.15,this.pitch-.12);if(e.key==='ArrowDown')this.pitch=Math.min(1.15,this.pitch+.12);if(e.key==='Home'){this.yaw=0;this.pitch=0;this.zoom=1;}this.onChange(this);});
  }
  face(yaw){this.auto=false;this.yaw=Math.round(this.yaw/(Math.PI*2))*Math.PI*2+yaw;this.pitch=0;this.onChange(this);}
+}
+/* The same 3D triangles are rasterized in Canvas when hardware WebGL is unavailable. */
+class SoftwareGarmentViewer{
+ constructor(canvas,{interactive=false,auto=true,onChange=()=>{},visible=()=>true}={}){
+  this.canvas=canvas;this.software=true;this.interactive=interactive;this.auto=auto;this.onChange=onChange;this.visible=visible;this.yaw=-.2;this.pitch=-.035;this.zoom=1;this.sequence=0;this.ready=false;this.ctx=canvas.getContext('2d');this.previous=performance.now();this.lastDraw=0;
+  if(interactive)GarmentViewer.prototype.bindControls.call(this);
+  this.tick=now=>{const dt=Math.min((now-this.previous)/1000,.05);this.previous=now;if(this.ready&&this.visible()&&!document.hidden){if(this.auto&&!this.dragging)this.yaw+=dt*.3;if(now-this.lastDraw>(interactive?40:90)){this.render();this.lastDraw=now;}}this.frame=requestAnimationFrame(this.tick)};
+  this.frame=requestAnimationFrame(this.tick);
+ }
+ async setProduct(product){
+  const sequence=++this.sequence;this.ready=false;this.canvas.dataset.status='loading';this.canvas.dataset.product=product.name;
+  try{
+   const [fi,bi]=await Promise.all([loadGarmentImage(product.image),loadGarmentImage(product.rear)]);if(sequence!==this.sequence)return;
+   const front=normalizeGarment(fi),back=normalizeGarment(bi);
+   this.front=front.atlas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,512,512).data;this.back=back.atlas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,512,512).data;
+   this.geometry=garmentGeometry(front.mask,this.interactive?56:36);this.yaw=-.2;this.pitch=-.035;this.zoom=1;this.ready=true;this.canvas.dataset.status='ready';this.canvas.dataset.renderer='software';this.render();this.onChange(this);
+  }catch(error){this.canvas.dataset.status='error';console.error(error);this.canvas.dispatchEvent(new CustomEvent('viewererror',{detail:error.message}));}
+ }
+ face(yaw){GarmentViewer.prototype.face.call(this,yaw);}
+ render(){
+  const c=this.canvas,cw=Math.max(1,c.clientWidth),ch=Math.max(1,c.clientHeight),scale=Math.min(1,(this.interactive?620:260)/cw,(this.interactive?650:340)/ch),w=Math.max(1,Math.round(cw*scale)),h=Math.max(1,Math.round(ch*scale));
+  if(c.width!==w||c.height!==h||!this.output){c.width=w;c.height=h;this.output=this.ctx.createImageData(w,h);this.depthBuffer=new Float32Array(w*h);}
+  const pixels=this.output.data,zbuffer=this.depthBuffer;pixels.fill(0);zbuffer.fill(0);
+  const m=rotationMatrix(this.yaw,this.pitch),distance=(cw/ch<.8?4.7:3.85)/this.zoom,f=1/Math.tan(.42),g=this.geometry;
+  const project=o=>{
+   const x=g[o],y=g[o+1],z=g[o+2],rx=m[0]*x+m[4]*y+m[8]*z,ry=m[1]*x+m[5]*y+m[9]*z,rz=m[2]*x+m[6]*y+m[10]*z,d=distance-rz;
+   const nx=m[0]*g[o+3]+m[4]*g[o+4]+m[8]*g[o+5],ny=m[1]*g[o+3]+m[5]*g[o+4]+m[9]*g[o+5],nz=m[2]*g[o+3]+m[6]*g[o+4]+m[10]*g[o+5],len=Math.hypot(nx,ny,nz);
+   return [w*.5+f*rx/d*h*.5,h*.5-f*ry/d*h*.5,1/d,g[o+6]/d,g[o+7]/d,nx/len,ny/len,nz/len];
+  };
+  for(let o=0;o<g.length;o+=27){
+   const a=project(o),b=project(o+9),d=project(o+18),den=(b[1]-d[1])*(a[0]-d[0])+(d[0]-b[0])*(a[1]-d[1]);if(Math.abs(den)<.005)continue;
+   const minX=Math.max(0,Math.floor(Math.min(a[0],b[0],d[0]))),maxX=Math.min(w-1,Math.ceil(Math.max(a[0],b[0],d[0]))),minY=Math.max(0,Math.floor(Math.min(a[1],b[1],d[1]))),maxY=Math.min(h-1,Math.ceil(Math.max(a[1],b[1],d[1])));
+   const nx=(a[5]+b[5]+d[5])/3,ny=(a[6]+b[6]+d[6])/3,nz=(a[7]+b[7]+d[7])/3,key=Math.max(0,(-.65*nx+.8*ny+1.6*nz)/1.9),fill=Math.max(0,(nx+.25*ny+.45*nz)/1.12),light=.67+.32*key+.12*fill,rim=Math.pow(1-Math.abs(nz),3)*7,face=g[o+8],tex=face<.5?this.front:this.back;
+   for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){
+    const px=x+.5,py=y+.5,wa=((b[1]-d[1])*(px-d[0])+(d[0]-b[0])*(py-d[1]))/den,wb=((d[1]-a[1])*(px-d[0])+(a[0]-d[0])*(py-d[1]))/den,wc=1-wa-wb;if(wa<-.001||wb<-.001||wc<-.001)continue;
+    const iz=wa*a[2]+wb*b[2]+wc*d[2],index=y*w+x;if(iz<=zbuffer[index])continue;zbuffer[index]=iz;const dest=index*4;
+    if(face>1.5){pixels[dest]=24*light+rim;pixels[dest+1]=25*light+rim;pixels[dest+2]=27*light+rim;}else{
+     const u=Math.max(0,Math.min(511,(wa*a[3]+wb*b[3]+wc*d[3])/iz*511)),v=Math.max(0,Math.min(511,(wa*a[4]+wb*b[4]+wc*d[4])/iz*511)),tx=Math.floor(u),ty=Math.floor(v),sample=(ty*512+tx)*4;
+     if(tex[sample+3]>25){pixels[dest]=tex[sample]*light+rim;pixels[dest+1]=tex[sample+1]*light+rim;pixels[dest+2]=tex[sample+2]*light+rim;}else{pixels[dest]=15*light+rim;pixels[dest+1]=16*light+rim;pixels[dest+2]=17*light+rim;}
+    }
+    pixels[dest+3]=255;
+   }
+  }
+  this.ctx.putImageData(this.output,0,0);c.dataset.yaw=this.yaw.toFixed(3);c.dataset.pitch=this.pitch.toFixed(3);
+ }
 }

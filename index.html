@@ -320,7 +320,7 @@ function route(){
    productViewer=new GarmentViewer(document.getElementById('productCanvas'),{interactive:true,auto:!reducedMotion.matches,onChange:viewerChange,visible:()=>currentView==='product'});
    document.getElementById('productCanvas').addEventListener('viewererror',()=>{document.getElementById('viewerStatus').textContent='The 3D view could not load. Try refreshing the page.'});
   }
-  if(!productViewer.gl)document.getElementById('viewerStatus').textContent='This browser does not support the 3D viewer. Please try a browser with WebGL enabled.';
+  if(!productViewer.gl&&!productViewer.software)document.getElementById('viewerStatus').textContent='This browser does not support the 3D viewer. Please try a browser with WebGL enabled.';
   productViewer.auto=!reducedMotion.matches;productViewer.setProduct(p);viewerChange(productViewer);productPage.scrollTop=0;
   document.title=p.name+' — FONZ / 360°';
  }else{render();document.title='FONZ — '+(currentView==='collection'?'The Collection':'Wear Your Point of View');}
