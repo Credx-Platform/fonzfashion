@@ -36,7 +36,7 @@ body.engaged .carousel-halo{transform:scale(1.15)}
 body.engaged .orbit-track{transform:rotateZ(var(--orbit-tilt,-12deg)) rotateY(62deg)}
 body.engaged .orbit-track.rear{transform:translateX(-25px) rotateZ(calc(var(--orbit-tilt,-12deg) + 28deg)) rotateY(68deg)}
 .wheel{position:relative;width:min(54vw,760px);height:min(74vh,780px);transform:scale(.65);transition:transform 1.15s var(--ease);will-change:transform}
-body.engaged .wheel{transform:scale(.98)}
+body.engaged .wheel{transform:scale(1.10)}
 .slide{position:absolute;inset:0;display:grid;place-items:center;will-change:transform,opacity;pointer-events:none}
 .slide-art{position:relative;width:min(39vw,57vh,540px);height:min(39vw,57vh,540px);display:grid;place-items:center;animation:levitate 7s ease-in-out infinite;animation-delay:var(--float-delay,0s)}
 .slide-art:before{content:"";position:absolute;inset:15% 3%;border-radius:50%;background:radial-gradient(ellipse,color-mix(in srgb,var(--shirt-mood) 65%,transparent),transparent 70%);filter:blur(40px);transform:translateY(12px);z-index:-1}
@@ -85,7 +85,7 @@ body.engaged .mission h1{margin-top:12px;margin-bottom:0}
  .carousel-area{position:absolute;inset:10vh 0 4vh;height:auto}
  .carousel-halo{width:66vw}
  .wheel{width:100vw;height:76vh;transform:scale(.58)}
- body.engaged .wheel{transform:scale(.88)}
+ body.engaged .wheel{transform:scale(.98)}
  .slide-art{width:min(82vw,48vh);height:min(82vw,48vh)}
  .orbit-track{width:78vw}.orbit-track.rear{width:90vw}
  body.engaged .carousel-halo{width:83vw}
@@ -100,6 +100,27 @@ body.engaged .mission h1{margin-top:12px;margin-bottom:0}
  body.engaged .mission{transform:translateY(-1vh) scale(.55)}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+[hidden]{display:none!important}
+button,a,canvas{outline-offset:5px}button:focus-visible,a:focus-visible,canvas:focus-visible{outline:2px solid var(--accent)}
+.header-actions{display:flex;align-items:center;gap:23px}.collection-nav{position:relative}.menu-toggle{border:0;background:none;padding:12px 0;font-size:10px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}.menu-toggle span{display:inline-block;margin-left:7px;transition:transform .2s}.menu-toggle[aria-expanded="true"] span{transform:rotate(180deg)}
+.collection-menu{position:absolute;right:0;top:46px;width:270px;padding:10px 16px;background:rgba(13,13,16,.96);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 25px 90px rgba(0,0,0,.35);backdrop-filter:blur(25px)}
+.collection-menu a{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 2px;font-size:12px;color:var(--ink);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}.collection-menu a:hover{color:var(--accent)}.collection-menu a span{font-size:10px;color:rgba(255,255,255,.45)}.collection-menu a:last-child{border:0}
+.inspect-shirt{width:100%;border:0;border-bottom:1px solid rgba(255,255,255,.22);padding:0 0 11px;margin-bottom:13px;background:none;text-align:left;font-size:9px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}.inspect-shirt span{float:right}
+body.collection-open .layout,body.collection-open>.controls,body.collection-open>.progress,body.collection-open>.scroll-hint,body.product-open .layout,body.product-open>.controls,body.product-open>.progress,body.product-open>.scroll-hint{display:none}
+.collection-page{position:absolute;inset:78px 0 0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:58px 5.2vw 36px;z-index:7;background:linear-gradient(180deg,rgba(12,12,15,.6),rgba(12,12,15,.92))}
+.collection-heading{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;gap:20px}.collection-heading h1{font-weight:400;font-size:clamp(38px,4.6vw,70px);line-height:.94;letter-spacing:-.075em;margin:20px 0 18px}.collection-heading h1 em{font-family:Georgia,serif;font-weight:400}.collection-heading p{color:rgba(255,255,255,.55);font-size:12px;line-height:1.7;margin:0}.back-link{color:rgba(255,255,255,.66);text-decoration:none;font-size:10px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}.back-link:hover{color:#fff}
+.collection-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}.collection-card{width:100%;padding:0;border:0;color:var(--ink);background:none;text-align:left;cursor:pointer}.collection-preview{position:relative;aspect-ratio:.84;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--card-mood) 45%,transparent),transparent 70%);border-radius:50%;transition:transform .5s var(--ease)}.collection-card:hover .collection-preview{transform:translateY(-8px)}.collection-preview canvas{width:100%;height:100%;display:block;pointer-events:none;filter:drop-shadow(0 16px 22px rgba(0,0,0,.25))}.collection-preview img{display:none;width:100%;height:100%;object-fit:contain}.collection-preview canvas[data-status="unavailable"]+img,.collection-preview canvas[data-status="error"]+img{display:block;position:absolute;inset:0}
+.card-caption{border-top:1px solid rgba(255,255,255,.15);padding:18px 0 8px;display:flex;justify-content:space-between;gap:9px}.card-caption h2{margin:0;font-size:16px;font-weight:400;letter-spacing:-.05em}.card-caption span{font-size:13px;font-family:Georgia,serif}.card-instruction{font-size:8px;color:rgba(255,255,255,.48);letter-spacing:.15em;text-transform:uppercase}.collection-footnote{color:rgba(255,255,255,.35);text-align:center;font-size:9px;letter-spacing:.09em;margin:45px 0 0}
+.product-page{position:absolute;inset:78px 0 0;z-index:7;display:grid;grid-template-columns:minmax(0,1fr) 300px;padding:25px 7vw 95px 5.2vw;gap:5vw;align-items:center;overflow:clip}.product-back{position:absolute;left:5.2vw;top:26px;z-index:4}.product-display{position:relative;height:calc(100dvh - 210px);min-height:280px;display:grid;place-items:center}.product-glow{position:absolute;inset:8% 10%;background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 14%,transparent),transparent 65%);filter:blur(30px);pointer-events:none}.display-floor{position:absolute;bottom:10%;width:40%;height:25px;filter:blur(16px);border-radius:50%;background:rgba(0,0,0,.4);pointer-events:none}
+#productCanvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;position:relative;z-index:1}#productCanvas:active{cursor:grabbing}#productCanvas[data-status="loading"],#productCanvas[data-status="error"]{opacity:0}
+.viewer-status{position:absolute;left:0;right:0;top:46%;text-align:center;font-size:12px;color:rgba(255,255,255,.6);pointer-events:none}
+.viewer-toolbar{position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:6px;background:rgba(12,12,15,.48);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,.12);border-radius:50px;z-index:3;white-space:nowrap}.viewer-toolbar button{border:0;background:transparent;border-radius:30px;padding:10px 13px;font-size:9px;cursor:pointer;color:rgba(255,255,255,.7)}.viewer-toolbar button:hover{background:rgba(255,255,255,.13);color:#fff}.viewer-toolbar button[aria-pressed="true"]{background:rgba(255,255,255,.12);color:#fff}.viewer-instructions{position:absolute;bottom:-27px;text-align:center;left:0;right:0;font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.42)}
+.product-info{position:relative;z-index:2}.product-info h1{font-size:clamp(31px,3vw,44px);font-weight:400;line-height:1;letter-spacing:-.07em;margin:23px 0 14px}.viewer-price{font-size:27px;font-family:Georgia,serif}.product-info>p{font-size:12px;line-height:1.8;color:rgba(255,255,255,.65);margin:22px 0}.size-heading{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.65);display:flex;justify-content:space-between;margin:25px 0 0}.product-sizes{gap:9px;margin:12px 0 23px}.product-sizes .size{width:43px;height:37px;font-size:10px}.product-info .add{height:48px}.product-feedback{font-size:10px!important;margin:12px 0!important;min-height:18px}.view-tip{margin-top:24px;padding-top:22px;border-top:1px solid rgba(255,255,255,.15);display:flex;align-items:center;gap:20px}.view-tip>span{font-size:30px;font-family:Georgia,serif;color:var(--accent)}.view-tip p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.8;margin:0}.rear-note{font-size:9px!important;color:rgba(255,255,255,.4)!important}
+.product-switcher{position:absolute;left:5.2vw;right:7vw;bottom:24px;display:flex;justify-content:center;gap:12px}.product-switcher a{width:45px;height:49px;display:block;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:3px;opacity:.5;transition:opacity .25s,border-color .25s}.product-switcher a[aria-current="true"],.product-switcher a:hover{opacity:1;border-color:var(--accent)}.product-switcher img{width:100%;height:100%;object-fit:contain}
+@media(max-width:1000px){.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}.collection-page{padding-top:38px}.product-page{grid-template-columns:minmax(0,1fr) 260px;gap:2vw;padding-right:5vw}.edition{display:none}}
+@media(max-width:680px){.header-actions{gap:15px}.menu-toggle{font-size:8px}.collection-menu{right:-78px;width:255px}.collection-page{inset:62px 0 0;padding:35px 5vw}.collection-heading{display:block;margin-bottom:20px}.collection-heading .back-link{display:inline-block;margin-top:18px}.collection-heading h1{font-size:42px}.collection-heading p{font-size:11px}.collection-grid{gap:25px 15px}.card-caption{display:block;padding-top:13px}.card-caption h2{font-size:14px;margin-bottom:6px}.card-caption span{font-size:13px}.card-instruction{font-size:7px}.collection-footnote{font-size:8px;line-height:1.8;margin-top:32px}.product-page{inset:62px 0 0;display:block;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:45px 5vw 28px}.product-back{top:18px;left:5vw}.product-display{height:56dvh;min-height:310px}.product-info{padding-top:58px;max-width:460px;margin:auto}.product-info h1{font-size:36px;margin:18px 0 12px}.product-info>p{margin:16px 0}.product-switcher{position:relative;left:auto;right:auto;bottom:auto;margin:26px 0 0}.viewer-toolbar{gap:0;padding:5px}.viewer-toolbar button{padding:10px;font-size:8px}.viewer-instructions{font-size:7px;letter-spacing:0;bottom:-24px}.view-tip{margin-top:18px}.inspect-shirt{font-size:8px;padding-bottom:8px;margin-bottom:9px}}
+
 </style>
 </head>
 <body>
@@ -107,7 +128,12 @@ body.engaged .mission h1{margin-top:12px;margin-bottom:0}
 <header class="topbar">
  <a class="wordmark" href="#" aria-label="FONZ Fashion">FONZ<small>FASHION / NEW YORK</small></a>
  <div class="edition">Independent expression · Drop 001</div>
- <button class="bag" id="bag">Bag&nbsp; 0</button>
+ <div class="header-actions">
+  <div class="collection-nav"><button class="menu-toggle" id="collectionToggle" aria-expanded="false" aria-controls="collectionMenu">Collection <span aria-hidden="true">⌄</span></button>
+   <div class="collection-menu" id="collectionMenu" hidden><a href="#collection">Explore all tees <span>04 ↗</span></a><div id="collectionMenuItems"></div></div>
+  </div>
+  <button class="bag" id="bag">Bag&nbsp; 0</button>
+ </div>
 </header>
 <main class="layout" id="stage">
  <section class="mission" aria-label="FONZ mission">
@@ -124,9 +150,10 @@ body.engaged .mission h1{margin-top:12px;margin-bottom:0}
  <aside class="details" id="details" aria-live="polite">
   <div class="detail-top"><span id="category">FONZ GRAPHIC SERIES</span><span id="detailIndex">01</span></div>
   <div class="detail-line"></div>
-  <h2 id="productName">Classical Statue Tee</h2><div class="price" id="price">$65</div>
+  <h2 id="productName">Classical Statue Tee</h2><div class="price" id="price">$59.99</div>
   <p id="description">A bold reworking of a timeless form. Heavyweight streetwear with a story on every side.</p>
   <div class="sizes"><button class="size">XS</button><button class="size selected">S</button><button class="size">M</button><button class="size">L</button><button class="size">XL</button></div>
+  <button class="inspect-shirt" id="inspectShirt">Explore in 3D <span>↗</span></button>
   <button class="add" id="add">Add to bag <span>↗</span></button>
   <p class="small-note">Complimentary shipping on orders $75+</p>
  </aside>
@@ -137,12 +164,34 @@ body.engaged .mission h1{margin-top:12px;margin-bottom:0}
  <button class="control" id="next" aria-label="Next shirt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m10 5 7 7-7 7"/></svg></button>
  <div class="counter" id="counter">01 — 04</div>
 </div>
+
+<section class="collection-page" id="collectionPage" aria-label="T-shirt collection" hidden>
+ <div class="collection-heading"><div><div class="kicker">Drop 001 / Graphic series</div><h1>A point of view.<br><em>Every angle.</em></h1><p>Four expressions. One collection. Choose a tee to explore it in 3D.</p></div><a href="#" class="back-link">Back to the wheel ↗</a></div>
+ <div class="collection-grid" id="collectionGrid"></div>
+ <p class="collection-footnote">FONZ / New York · $59.99 each · Front, rear & every angle in between</p>
+</section>
+<section class="product-page" id="productPage" aria-label="Interactive shirt viewer" hidden>
+ <a href="#collection" class="back-link product-back">← All tees</a>
+ <div class="product-display"><div class="product-glow" aria-hidden="true"></div><div class="display-floor" aria-hidden="true"></div>
+  <canvas id="productCanvas" aria-label="Interactive 3D shirt. Drag to rotate horizontally or vertically. Use arrow keys to change angle." tabindex="0"></canvas>
+  <div class="viewer-status" id="viewerStatus" role="status">Preparing your shirt…</div>
+  <div class="viewer-toolbar" role="group" aria-label="Shirt viewing controls"><button id="frontView">Front</button><button id="backView">Rear</button><button id="autoSpin" aria-pressed="true">Pause spin</button><button id="resetView" aria-label="Reset shirt view">Reset</button></div>
+  <div class="viewer-instructions">Drag to rotate in any direction · Scroll to zoom · Arrow keys to turn</div>
+ </div>
+ <aside class="product-info"><div class="kicker" id="viewerTitle"></div><h1 id="viewerName"></h1><div class="viewer-price" id="viewerPrice">$59.99</div><p id="viewerDescription"></p>
+  <div class="size-heading">Choose your size <span id="selectedSize">S</span></div><div class="sizes product-sizes"><button class="size">XS</button><button class="size selected">S</button><button class="size">M</button><button class="size">L</button><button class="size">XL</button></div>
+  <button class="add" id="viewerAdd">Add to bag <span>↗</span></button><p class="product-feedback" id="productFeedback" aria-live="polite"></p>
+  <div class="view-tip"><span>360°</span><p>Turn it around. Tilt it. Get closer.<br>Explore the design from every angle.</p></div><p class="rear-note" id="rearNote" hidden>Rear shown as a plain black mockup. Final rear design to follow.</p>
+ </aside>
+ <div class="product-switcher" id="productSwitcher" aria-label="Choose another shirt"></div>
+</section>
+<script src="viewer.js"></script>
 <script>
 const products=[
- {name:"Classical Statue Tee",title:"The Red Hour",price:65,image:"assets/classical-red-statue-floating.webp",mood:"#701b2b",accent:"#e1634f",desc:"A bold reworking of a timeless form. Heavyweight streetwear with a story on every side."},
- {name:"Chrome Bear Tee",title:"No Crown Needed",price:65,image:"assets/chrome-bear-floating.webp",mood:"#704221",accent:"#cba579",desc:"A playful icon with heavyweight attitude. Made for the ones who lead their own way."},
- {name:"Elevate Tee",title:"Higher Standards",price:65,image:"assets/elevate-higher-floating.webp",mood:"#234a5d",accent:"#c8b99d",desc:"A reminder to keep rising. Monumental artwork, grounded in an easy everyday fit."},
- {name:"Golden Mountains Tee",title:"The Ascent",price:65,image:"assets/golden-mountains-floating.webp",mood:"#79601d",accent:"#e3b75f",desc:"A little discipline today, a brighter tomorrow. A statement piece in monochrome and gold."}
+ {name:"Classical Statue Tee",title:"The Red Hour",price:59.99,slug:"classical-red-statue",rear:"assets/classical-red-statue-rear.webp",image:"assets/classical-red-statue-floating.webp",mood:"#701b2b",accent:"#e1634f",desc:"A bold reworking of a timeless form. Heavyweight streetwear with a story on every side."},
+ {name:"Chrome Bear Tee",title:"No Crown Needed",price:59.99,slug:"chrome-bear",rear:"assets/chrome-bear-rear.webp",image:"assets/chrome-bear-floating.webp",mood:"#704221",accent:"#cba579",desc:"A playful icon with heavyweight attitude. Made for the ones who lead their own way."},
+ {name:"Elevate Tee",title:"Higher Standards",price:59.99,slug:"elevate-higher",rear:"assets/elevate-higher-rear.webp",image:"assets/elevate-higher-floating.webp",mood:"#234a5d",accent:"#c8b99d",desc:"A reminder to keep rising. Monumental artwork, grounded in an easy everyday fit."},
+ {name:"Golden Mountains Tee",title:"The Ascent",price:59.99,slug:"golden-mountains",rear:"assets/golden-mountains-rear.webp",image:"assets/golden-mountains-floating.webp",mood:"#79601d",accent:"#e3b75f",desc:"A little discipline today, a brighter tomorrow. A statement piece in monochrome and gold."}
 ];
 const wheel=document.getElementById("wheel");
 wheel.innerHTML=products.map((p,i)=>'<article class="slide" data-index="'+i+'" style="--shirt-mood:'+p.mood+';--float-delay:-'+(i*1.6)+'s"><div class="slide-art"><img src="'+p.image+'" alt="'+p.name+' — floating tee mockup" draggable="false"></div></article>').join("");
@@ -177,7 +226,7 @@ function render(){
  atmospheres.forEach((el,i)=>el.classList.toggle("active",i===active));
  document.querySelector('meta[name="theme-color"]').content=p.mood;
  document.getElementById("productName").textContent=p.name;
- document.getElementById("price").textContent="$"+p.price;
+ document.getElementById("price").textContent="$"+p.price.toFixed(2);
  document.getElementById("description").textContent=p.desc;
  document.getElementById("category").textContent=p.title.toUpperCase();
  document.getElementById("detailIndex").textContent=String(active+1).padStart(2,"0");
@@ -206,6 +255,7 @@ function go(direction){
 window.addEventListener("resize",drawOrbit);
 drawOrbit();
 function handleWheel(e){
+ if(currentView!=="home")return;
  e.preventDefault();
  const delta=Math.abs(e.deltaY)>Math.abs(e.deltaX)?e.deltaY:e.deltaX;
  if(Math.abs(delta)<12)return;
@@ -216,17 +266,74 @@ function handleWheel(e){
 }
 window.addEventListener("wheel",handleWheel,{passive:false});
 window.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){setMenu(false);if(currentView==="product")location.hash="collection";return}
+ if(currentView!=="home"||e.target.matches("button,a,input,select,textarea,canvas"))return;
  if(["ArrowDown","ArrowRight","PageDown"," "].includes(e.key)){e.preventDefault();go(1)}
  if(["ArrowUp","ArrowLeft","PageUp"].includes(e.key)){e.preventDefault();go(-1)}
 });
 document.getElementById("previous").onclick=()=>go(-1);
 document.getElementById("next").onclick=()=>go(1);
-document.querySelectorAll(".size").forEach(b=>b.onclick=()=>{document.querySelectorAll(".size").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+document.querySelectorAll(".sizes").forEach(group=>group.querySelectorAll(".size").forEach(b=>b.onclick=()=>{group.querySelectorAll(".size").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");if(group.classList.contains("product-sizes"))document.getElementById("selectedSize").textContent=b.textContent}));
 document.getElementById("add").onclick=()=>{bag++;document.getElementById("bag").textContent="Bag  "+bag};
-document.addEventListener("touchstart",e=>{touchStart=e.touches[0].clientY},{passive:true});
-document.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
-document.addEventListener("touchend",e=>{if(touchStart===null)return;const delta=touchStart-e.changedTouches[0].clientY;if(Math.abs(delta)>35)go(delta>0?1:-1);touchStart=null},{passive:true});
+document.addEventListener("touchstart",e=>{if(currentView==="home")touchStart=e.touches[0].clientY},{passive:true});
+document.addEventListener("touchmove",e=>{if(currentView==="home")e.preventDefault()},{passive:false});
+document.addEventListener("touchend",e=>{if(currentView!=="home"||touchStart===null)return;const delta=touchStart-e.changedTouches[0].clientY;if(Math.abs(delta)>35)go(delta>0?1:-1);touchStart=null},{passive:true});
+let currentView='home',currentProduct=0,productViewer=null,previewViewers=[];
+const collectionPage=document.getElementById('collectionPage'),productPage=document.getElementById('productPage');
+const menu=document.getElementById('collectionMenu'),menuToggle=document.getElementById('collectionToggle');
+function setMenu(open){menu.hidden=!open;menuToggle.setAttribute('aria-expanded',String(open));}
+menuToggle.onclick=()=>setMenu(menu.hidden);
+document.addEventListener('click',e=>{if(!e.target.closest('.collection-nav'))setMenu(false)});
+menu.addEventListener('click',e=>{if(e.target.closest('a'))setMenu(false)});
+document.getElementById('collectionMenuItems').innerHTML=products.map(p=>'<a href="#product/'+p.slug+'">'+p.name+' <span>$'+p.price.toFixed(2)+'</span></a>').join('');
+document.getElementById('collectionGrid').innerHTML=products.map((p,i)=>'<button class="collection-card" data-product="'+i+'" aria-label="Explore '+p.name+' in 3D, $'+p.price.toFixed(2)+'"><div class="collection-preview" style="--card-mood:'+p.mood+'"><canvas data-preview="'+i+'" aria-hidden="true"></canvas><img src="'+p.image+'" alt=""></div><div class="card-caption"><h2>'+p.name+'</h2><span>$'+p.price.toFixed(2)+'</span></div><div class="card-instruction">Explore the 360° view ↗</div></button>').join('');
+document.querySelectorAll('.collection-card').forEach(b=>b.onclick=()=>{location.hash='product/'+products[Number(b.dataset.product)].slug});
+document.getElementById('productSwitcher').innerHTML=products.map((p,i)=>'<a href="#product/'+p.slug+'" data-switch="'+i+'" aria-label="View '+p.name+'"><img src="'+p.image+'" alt=""></a>').join('');
+document.getElementById('inspectShirt').onclick=()=>{location.hash='product/'+products[active].slug};
+function viewerChange(viewer){
+ document.getElementById('autoSpin').textContent=viewer.auto?'Pause spin':'Auto spin';
+ document.getElementById('autoSpin').setAttribute('aria-pressed',String(viewer.auto));
+ if(viewer.ready){document.getElementById('viewerStatus').hidden=true;}
+}
+function route(){
+ const hash=location.hash.slice(1);
+ currentView=hash.startsWith('product/')?'product':hash==='collection'?'collection':'home';
+ const index=products.findIndex(p=>'product/'+p.slug===hash);
+ if(currentView==='product'&&index<0){location.hash='collection';return;}
+ document.body.classList.toggle('collection-open',currentView==='collection');
+ document.body.classList.toggle('product-open',currentView==='product');
+ document.getElementById('stage').hidden=currentView!=='home';
+ collectionPage.hidden=currentView!=='collection';productPage.hidden=currentView!=='product';setMenu(false);
+ if(currentView==='collection'&&!previewViewers.length){
+  document.querySelectorAll('[data-preview]').forEach((canvas,i)=>{const v=new GarmentViewer(canvas,{auto:!reducedMotion.matches,visible:()=>currentView==='collection'});previewViewers.push(v);v.setProduct(products[i]);});
+ }
+ if(currentView==='product'){
+  currentProduct=index;const p=products[index];
+  document.documentElement.style.setProperty('--mood',p.mood);document.documentElement.style.setProperty('--accent',p.accent);
+  atmospheres.forEach((el,i)=>el.classList.toggle('active',i===index));
+  document.getElementById('viewerTitle').textContent=p.title;
+  document.getElementById('viewerName').textContent=p.name;document.getElementById('viewerPrice').textContent='$'+p.price.toFixed(2);document.getElementById('viewerDescription').textContent=p.desc;
+  document.getElementById('rearNote').hidden=index!==1;document.getElementById('productFeedback').textContent='';
+  document.getElementById('viewerStatus').hidden=false;document.getElementById('viewerStatus').textContent='Preparing your shirt…';
+  document.querySelectorAll('[data-switch]').forEach(a=>a.setAttribute('aria-current',String(Number(a.dataset.switch)===index)));
+  if(!productViewer){
+   productViewer=new GarmentViewer(document.getElementById('productCanvas'),{interactive:true,auto:!reducedMotion.matches,onChange:viewerChange,visible:()=>currentView==='product'});
+   document.getElementById('productCanvas').addEventListener('viewererror',()=>{document.getElementById('viewerStatus').textContent='The 3D view could not load. Try refreshing the page.'});
+  }
+  if(!productViewer.gl)document.getElementById('viewerStatus').textContent='This browser does not support the 3D viewer. Please try a browser with WebGL enabled.';
+  productViewer.auto=!reducedMotion.matches;productViewer.setProduct(p);viewerChange(productViewer);productPage.scrollTop=0;
+  document.title=p.name+' — FONZ / 360°';
+ }else{render();document.title='FONZ — '+(currentView==='collection'?'The Collection':'Wear Your Point of View');}
+}
+document.getElementById('frontView').onclick=()=>productViewer?.face(0);
+document.getElementById('backView').onclick=()=>productViewer?.face(Math.PI);
+document.getElementById('autoSpin').onclick=()=>{if(productViewer){productViewer.auto=!productViewer.auto;viewerChange(productViewer)}};
+document.getElementById('resetView').onclick=()=>{if(productViewer){productViewer.face(-.2);productViewer.pitch=-.035;productViewer.zoom=1}};
+document.getElementById('viewerAdd').onclick=()=>{bag++;document.getElementById('bag').textContent='Bag  '+bag;document.getElementById('productFeedback').textContent=products[currentProduct].name+' · '+document.getElementById('selectedSize').textContent+' added to your bag.'};
+window.addEventListener('hashchange',route);
+
 render();
+route();
 </script>
 </body>
 </html>
