@@ -22,17 +22,25 @@ function garmentGeometry(mask,N=128){
  function depth(u,v){const x=(u-.5)*2,y=(.5-v)*2;const body=Math.exp(-Math.pow(x*1.9,4));return .042+.15*body*(.78+.22*Math.cos(y*2))+.011*Math.sin(x*27+y*9)*body+.009*Math.sin(y*30+x*7);}
  function point(u,v,side){return [(u-.5)*2.5,(.5-v)*2.65,depth(u,v)*side];}
  function push(u,v,side,normal){
-  const p=point(u,v,side);
+  [u,v]=boundary(u,v);const p=point(u,v,side);
   if(!normal){const e=.001,dx=(depth(u+e,v)-depth(u-e,v))/(2*e*2.5),dy=(depth(u,v-e)-depth(u,v+e))/(2*e*2.65);normal=[-dx*side,-dy*side,side];}
   data.push(...p,...normal,side>0?u:1-u,v,side>0?0:1);
  }
  function alpha(u,v){const x=Math.max(0,Math.min(511,Math.round(u*511))),y=Math.max(0,Math.min(511,Math.round(v*511)));return mask[(y*512+x)*4+3];}
  for(let y=0;y<N;y++)for(let x=0;x<N;x++)valid[y*N+x]=alpha((x+.5)/N,(y+.5)/N)>110?1:0;
+ const snapped=new Map();
+ function boundary(u,v){
+  const key=Math.round(u*N)+','+Math.round(v*N);if(snapped.has(key))return snapped.get(key);
+  if(alpha(u,v)>110){snapped.set(key,[u,v]);return [u,v];}
+  const x=Math.round(u*511),y=Math.round(v*511),radius=Math.ceil(512/N*1.6);let best=Infinity,result=[u,v];
+  for(let dy=-radius;dy<=radius;dy++)for(let dx=-radius;dx<=radius;dx++){const distance=dx*dx+dy*dy;if(distance>=best)continue;const sx=x+dx,sy=y+dy;if(sx<0||sy<0||sx>=512||sy>=512)continue;if(mask[(sy*512+sx)*4+3]>110){best=distance;result=[sx/511,sy/511];}}
+  snapped.set(key,result);return result;
+ }
  const has=(x,y)=>x>=0&&y>=0&&x<N&&y<N&&valid[y*N+x];
  function surface(a,b,c,side){for(const p of side>0?[a,b,c]:[a,c,b])push(p[0],p[1],side);}
  function edge(a,b,normal){
   for(const [p,side] of [[a,1],[b,1],[b,-1],[a,1],[b,-1],[a,-1]]){
-   const pos=point(p[0],p[1],side);data.push(...pos,...normal,p[0],p[1],2);
+   const uv=boundary(p[0],p[1]);const pos=point(uv[0],uv[1],side);data.push(...pos,...normal,uv[0],uv[1],2);
   }
  }
  for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(has(x,y)){
@@ -111,7 +119,7 @@ class GarmentViewer{
   canvas.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();this.zoom=Math.max(.7,Math.min(1.55,this.zoom-e.deltaY*.001));this.onChange(this);},{passive:false});
   canvas.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(e.key))return;e.preventDefault();e.stopPropagation();this.auto=false;if(e.key==='ArrowLeft')this.yaw-=.15;if(e.key==='ArrowRight')this.yaw+=.15;if(e.key==='ArrowUp')this.pitch=Math.max(-1.15,this.pitch-.12);if(e.key==='ArrowDown')this.pitch=Math.min(1.15,this.pitch+.12);if(e.key==='Home'){this.yaw=0;this.pitch=0;this.zoom=1;}this.onChange(this);});
  }
- face(yaw){this.auto=false;this.yaw=Math.round(this.yaw/(Math.PI*2))*Math.PI*2+yaw;this.pitch=0;this.onChange(this);}
+ face(yaw){this.auto=false;this.yaw=Math.round(this.yaw/(Math.PI*2))*Math.PI*2+yaw;this.pitch=0;if(this.ready)this.render();this.onChange(this);}
 }
 /* The same 3D triangles are rasterized in Canvas when hardware WebGL is unavailable. */
 class SoftwareGarmentViewer{
@@ -127,12 +135,12 @@ class SoftwareGarmentViewer{
    const [fi,bi]=await Promise.all([loadGarmentImage(product.image),loadGarmentImage(product.rear)]);if(sequence!==this.sequence)return;
    const front=normalizeGarment(fi),back=normalizeGarment(bi);
    this.front=front.atlas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,512,512).data;this.back=back.atlas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,512,512).data;
-   this.geometry=garmentGeometry(front.mask,this.interactive?56:36);this.yaw=-.2;this.pitch=-.035;this.zoom=1;this.ready=true;this.canvas.dataset.status='ready';this.canvas.dataset.renderer='software';this.render();this.onChange(this);
+   this.geometry=garmentGeometry(front.mask,this.interactive?88:56);this.yaw=-.2;this.pitch=-.035;this.zoom=1;this.ready=true;this.canvas.dataset.status='ready';this.canvas.dataset.renderer='software';this.render();this.onChange(this);
   }catch(error){this.canvas.dataset.status='error';console.error(error);this.canvas.dispatchEvent(new CustomEvent('viewererror',{detail:error.message}));}
  }
  face(yaw){GarmentViewer.prototype.face.call(this,yaw);}
  render(){
-  const c=this.canvas,cw=Math.max(1,c.clientWidth),ch=Math.max(1,c.clientHeight),scale=Math.min(1,(this.interactive?620:260)/cw,(this.interactive?650:340)/ch),w=Math.max(1,Math.round(cw*scale)),h=Math.max(1,Math.round(ch*scale));
+  const c=this.canvas,cw=Math.max(1,c.clientWidth),ch=Math.max(1,c.clientHeight),scale=Math.min(1,(this.interactive?720:300)/cw,(this.interactive?750:360)/ch),w=Math.max(1,Math.round(cw*scale)),h=Math.max(1,Math.round(ch*scale));
   if(c.width!==w||c.height!==h||!this.output){c.width=w;c.height=h;this.output=this.ctx.createImageData(w,h);this.depthBuffer=new Float32Array(w*h);}
   const pixels=this.output.data,zbuffer=this.depthBuffer;pixels.fill(0);zbuffer.fill(0);
   const m=rotationMatrix(this.yaw,this.pitch),distance=(cw/ch<.8?4.7:3.85)/this.zoom,f=1/Math.tan(.42),g=this.geometry;
@@ -150,7 +158,8 @@ class SoftwareGarmentViewer{
     const iz=wa*a[2]+wb*b[2]+wc*d[2],index=y*w+x;if(iz<=zbuffer[index])continue;zbuffer[index]=iz;const dest=index*4;
     if(face>1.5){pixels[dest]=24*light+rim;pixels[dest+1]=25*light+rim;pixels[dest+2]=27*light+rim;}else{
      const u=Math.max(0,Math.min(511,(wa*a[3]+wb*b[3]+wc*d[3])/iz*511)),v=Math.max(0,Math.min(511,(wa*a[4]+wb*b[4]+wc*d[4])/iz*511)),tx=Math.floor(u),ty=Math.floor(v),sample=(ty*512+tx)*4;
-     if(tex[sample+3]>25){pixels[dest]=tex[sample]*light+rim;pixels[dest+1]=tex[sample+1]*light+rim;pixels[dest+2]=tex[sample+2]*light+rim;}else{pixels[dest]=15*light+rim;pixels[dest+1]=16*light+rim;pixels[dest+2]=17*light+rim;}
+     if(tex[sample+3]>25){const fx=u-tx,fy=v-ty,sx=Math.min(tx+1,511),sy=Math.min(ty+1,511),i10=(ty*512+sx)*4,i01=(sy*512+tx)*4,i11=(sy*512+sx)*4;
+      for(let channel=0;channel<3;channel++)pixels[dest+channel]=(tex[sample+channel]*(1-fx)*(1-fy)+tex[i10+channel]*fx*(1-fy)+tex[i01+channel]*(1-fx)*fy+tex[i11+channel]*fx*fy)*light+rim;}else{pixels[dest]=15*light+rim;pixels[dest+1]=16*light+rim;pixels[dest+2]=17*light+rim;}
     }
     pixels[dest+3]=255;
    }
