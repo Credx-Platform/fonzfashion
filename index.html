@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#171615">
+<meta name="description" content="Explore the FONZ collection: expressive graphic tees with interactive 360-degree garment views.">
+<link rel="stylesheet" href="cart.css">
 <title>FONZ — Wear Your Point of View</title>
 <style>
 :root{color-scheme:dark;--ink:#f4f2ee;--mood:#702e2d;--accent:#e3694d;--ease:cubic-bezier(.19,1,.22,1)}
@@ -178,7 +180,7 @@ body.collection-open .layout,body.collection-open>.controls,body.collection-open
   <div class="sizes"><button class="size">XS</button><button class="size selected">S</button><button class="size">M</button><button class="size">L</button><button class="size">XL</button></div>
   <button class="inspect-shirt" id="inspectShirt">Explore in 3D <span>↗</span></button>
   <button class="add" id="add">Add to bag <span>↗</span></button>
-  <p class="small-note">Complimentary shipping on orders $75+</p>
+  <p class="small-note">Checkout opening soon</p>
  </aside>
 </main>
 <div class="progress"><i id="progress"></i></div><div class="scroll-hint" id="scrollHint">Scroll anywhere to spin</div>
@@ -208,7 +210,13 @@ body.collection-open .layout,body.collection-open>.controls,body.collection-open
  </aside>
  <div class="product-switcher" id="productSwitcher" aria-label="Choose another shirt"></div>
 </section>
-<script src="viewer.js"></script>
+<dialog id="cartDialog" aria-labelledby="cartTitle">
+<button id="closeCart" aria-label="Close bag">Close</button><h2 id="cartTitle">Your bag</h2>
+<ul id="cartItems"></ul><p class="cart-total">Subtotal <strong id="cartSubtotal">$0.00</strong></p>
+<button class="cart-checkout" disabled>Checkout opening soon</button>
+<p class="cart-note">Orders are not being accepted yet. Shipping, tax, availability, and delivery details will be confirmed before checkout opens.</p>
+</dialog><div id="cartNotice" role="status" aria-live="polite"></div>
+<script src="cart.js"></script><script src="viewer.js"></script>
 <script>
 const products=[
  {name:"Classical Statue Tee",title:"The Red Hour",price:59.99,slug:"classical-red-statue",rear:"assets/classical-red-statue-rear.webp",image:"assets/classical-red-statue-floating.webp",mood:"#701b2b",accent:"#e1634f",desc:"A bold reworking of a timeless form. Heavyweight streetwear with a story on every side."},
@@ -222,7 +230,8 @@ document.getElementById("scene").innerHTML=products.map((p,i)=>'<div class="atmo
 const slides=Array.from(wheel.querySelectorAll(".slide"));
 const atmospheres=Array.from(document.querySelectorAll(".atmosphere"));
 const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
-let active=0,bag=0,engaged=false,lastStep=-Infinity,touchStart=null;
+const cart=FonzCart.mount(products);
+let active=0,engaged=false,lastStep=-Infinity,touchStart=null;
 let position=0,target=0,motion=null;
 function drawOrbit(){
  const mobile=innerWidth<=680;
@@ -278,7 +287,7 @@ function go(direction){
 window.addEventListener("resize",drawOrbit);
 drawOrbit();
 function handleWheel(e){
- if(currentView!=="home")return;
+ if(document.getElementById("cartDialog").open||currentView!=="home")return;
  e.preventDefault();
  const delta=Math.abs(e.deltaY)>Math.abs(e.deltaX)?e.deltaY:e.deltaX;
  if(Math.abs(delta)<12)return;
@@ -289,6 +298,7 @@ function handleWheel(e){
 }
 window.addEventListener("wheel",handleWheel,{passive:false});
 window.addEventListener("keydown",e=>{
+ if(document.getElementById("cartDialog").open)return;
  if(e.key==="Escape"){setMenu(false);if(currentView==="product")location.hash="collection";return}
  if(currentView!=="home"||e.target.matches("button,a,input,select,textarea,canvas"))return;
  if(["ArrowDown","ArrowRight","PageDown"," "].includes(e.key)){e.preventDefault();go(1)}
@@ -297,10 +307,10 @@ window.addEventListener("keydown",e=>{
 document.getElementById("previous").onclick=()=>go(-1);
 document.getElementById("next").onclick=()=>go(1);
 document.querySelectorAll(".sizes").forEach(group=>group.querySelectorAll(".size").forEach(b=>b.onclick=()=>{group.querySelectorAll(".size").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");if(group.classList.contains("product-sizes"))document.getElementById("selectedSize").textContent=b.textContent}));
-document.getElementById("add").onclick=()=>{bag++;document.getElementById("bag").textContent="Bag  "+bag};
-document.addEventListener("touchstart",e=>{if(currentView==="home")touchStart=e.touches[0].clientY},{passive:true});
-document.addEventListener("touchmove",e=>{if(currentView==="home")e.preventDefault()},{passive:false});
-document.addEventListener("touchend",e=>{if(currentView!=="home"||touchStart===null)return;const delta=touchStart-e.changedTouches[0].clientY;if(Math.abs(delta)>35)go(delta>0?1:-1);touchStart=null},{passive:true});
+document.getElementById("add").onclick=()=>{cart.add(products[active].slug,document.querySelector(".details .size.selected").textContent)};
+document.addEventListener("touchstart",e=>{if(!document.getElementById("cartDialog").open&&currentView==="home")touchStart=e.touches[0].clientY},{passive:true});
+document.addEventListener("touchmove",e=>{if(!document.getElementById("cartDialog").open&&currentView==="home")e.preventDefault()},{passive:false});
+document.addEventListener("touchend",e=>{if(document.getElementById("cartDialog").open||currentView!=="home"||touchStart===null)return;const delta=touchStart-e.changedTouches[0].clientY;if(Math.abs(delta)>35)go(delta>0?1:-1);touchStart=null},{passive:true});
 let currentView='home',currentProduct=0,productViewer=null,previewViewers=[];
 const collectionPage=document.getElementById('collectionPage'),productPage=document.getElementById('productPage');
 const menu=document.getElementById('collectionMenu'),menuToggle=document.getElementById('collectionToggle');
@@ -357,7 +367,7 @@ document.getElementById('frontView').onclick=()=>productViewer?.face(0);
 document.getElementById('backView').onclick=()=>productViewer?.face(Math.PI);
 document.getElementById('autoSpin').onclick=()=>{if(productViewer){productViewer.auto=!productViewer.auto;productViewer.turn=null;productViewer.velocity=0;viewerChange(productViewer)}};
 document.getElementById('resetView').onclick=()=>productViewer?.reset();
-document.getElementById('viewerAdd').onclick=()=>{bag++;document.getElementById('bag').textContent='Bag  '+bag;document.getElementById('productFeedback').textContent=products[currentProduct].name+' · '+document.getElementById('selectedSize').textContent+' added to your bag.'};
+document.getElementById('viewerAdd').onclick=()=>{const added=cart.add(products[currentProduct].slug,document.getElementById('selectedSize').textContent);document.getElementById('productFeedback').textContent=added?'Added to your bag.':'Maximum quantity reached for this size.'};
 window.addEventListener('hashchange',route);
 
 render();
