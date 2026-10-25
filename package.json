@@ -1,0 +1,7 @@
+{
+  "name": "fonz-fashion",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {"node": ">=22"},
+  "scripts": {"start": "node server.mjs", "test": "node --test test/*.test.cjs"}
+}
